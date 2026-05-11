@@ -14,6 +14,8 @@ Agent ──CLI──▶ HTML 工作台 ──交互──▶ 人类
 
 ## 快速开始
 
+无需安装，无需克隆仓库，直接运行：
+
 ```bash
 npx ws-workspace start
 ```
@@ -31,9 +33,11 @@ npx ws-workspace add decision-card '{"question":"先做哪个方向？","options
 npx ws-workspace add todo-list '{"title":"行动项","items":["调研","原型","开发","上线"]}'
 ```
 
-页面通过 WebSocket 实时更新。用户拖拽卡片、点击选项、勾选待办——所有状态以结构化 JSON 回流给 Agent。
+页面通过 WebSocket 实时更新。用户拖拽卡片、点击选项、勾选待办、输入文本——所有状态以结构化 JSON 回流给 Agent。
 
-## 全局安装
+> **注意：** 不要 `git clone` 本仓库来使用。`npx ws-workspace start` 会自动处理依赖、二进制和服务器。
+
+## 全局安装（可选）
 
 ```bash
 npm install -g ws-workspace
@@ -113,6 +117,14 @@ ws-workspace add todo-list '{"title":"上线清单","items":["代码审查","QA 
 npm install -g ws-workspace
 ws-workspace start --port 1989
 ```
+
+或者直接运行（推荐，无需全局安装）：
+
+```bash
+npx ws-workspace start --port 1989
+```
+
+> **不要 git clone 本仓库。** `npx` 或 `npm install -g` 会自动解析所有依赖。克隆仓库后直接运行 `node bin/ws-workspace.js` 会因为缺少依赖而失败。
 
 ### 工作流程
 

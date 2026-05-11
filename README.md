@@ -14,6 +14,8 @@ Agent ──CLI──▶ HTML Workspace ──interaction──▶ Human
 
 ## Quick Start
 
+No install, no clone, just run:
+
 ```bash
 npx ws-workspace start
 ```
@@ -27,9 +29,11 @@ npx ws-workspace add decision-card '{"question":"Which direction?","options":[{"
 npx ws-workspace add todo-list '{"title":"Action Items","items":["Research","Prototype","Ship"]}'
 ```
 
-The page updates in real-time via WebSocket. Users drag cards, click options, check boxes — all state flows back as structured JSON.
+The page updates in real-time via WebSocket. Users drag cards, click options, check boxes, type comments — all state flows back as structured JSON.
 
-## Install (Global)
+> **Note:** Do NOT `git clone` this repo to use it. `npx ws-workspace start` handles everything automatically — dependencies, binary, and server.
+
+## Install (Global, optional)
 
 ```bash
 npm install -g ws-workspace
@@ -134,11 +138,13 @@ If you're an AI agent reading this repo — here's how to get up and running:
 npm install -g ws-workspace
 ```
 
-Or run directly:
+Or run directly (recommended — no global install needed):
 
 ```bash
 npx ws-workspace start --port 1989
 ```
+
+> **Do NOT git clone this repo.** `npx` or `npm install -g` resolves all dependencies automatically. Cloning the repo and running `node bin/ws-workspace.js` will fail because dependencies aren't bundled.
 
 ### Workflow
 

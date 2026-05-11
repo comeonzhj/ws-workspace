@@ -21,9 +21,11 @@ let state = {
 function uid() { return crypto.randomBytes(4).toString('hex'); }
 
 // ─── Broadcast to all browsers ────────────────────────
-function broadcast(type, payload) {
+function broadcast(type, payload, excludeWs) {
   const msg = JSON.stringify({ type, payload, ts: Date.now() });
-  wss.clients.forEach(c => { if (c.readyState === 1) c.send(msg); });
+  wss.clients.forEach(c => {
+    if (c.readyState === 1 && c !== excludeWs) c.send(msg);
+  });
 }
 
 // ─── WebSocket (browser ↔ server) ────────────────────
@@ -52,8 +54,8 @@ wss.on('connection', (ws) => {
           comp.state = { ...comp.state, ...msg.new_state };
         }
 
-        // 广播给所有客户端（包括其他浏览器标签）
-        broadcast('state_update', { component_id: msg.component_id, new_state: msg.new_state, event: evt });
+        // 广播给其他客户端（不包括发送者自己）
+        broadcast('state_update', { component_id: msg.component_id, new_state: msg.new_state, event: evt }, ws);
         console.log(`[user_event] ${msg.component_id}.${msg.event}`, JSON.stringify(msg.data));
       }
     } catch (e) {
