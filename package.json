@@ -40,7 +40,8 @@
     "server.js",
     "ws-cli.js",
     "public/",
-    "README.md"
+    "README.md",
+    "README.zh-CN.md"
   ],
   "engines": {
     "node": ">=16.0.0"
