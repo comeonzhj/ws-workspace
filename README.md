@@ -282,4 +282,4 @@ This project was inspired by Thariq Mallik's ["The Unreasonable Effectiveness of
 
 ## License
 
-MIT © [jiaai](https://github.com/comeonzhj)
+MIT © [comeonzhj](https://github.com/comeonzhj)
