@@ -13,16 +13,16 @@ Agent ──CLI──▶ HTML Workspace ──interaction──▶ Human
 ## Quick Start
 
 ```bash
-npx @comeonzhj/ws-workspace start
+npx ws-workspace start
 ```
 
 Open `http://localhost:1989` in your browser. The workspace starts empty — an agent (or you via CLI) adds components.
 
 ```bash
 # In another terminal, add components:
-npx @comeonzhj/ws-workspace add kanban '{"columns":["Ideas","Evaluating","Confirmed","In Progress"]}'
-npx @comeonzhj/ws-workspace add decision-card '{"question":"Which direction?","options":[{"value":"a","label":"Option A"},{"value":"b","label":"Option B"}]}'
-npx @comeonzhj/ws-workspace add todo-list '{"title":"Action Items","items":["Research","Prototype","Ship"]}'
+npx ws-workspace add kanban '{"columns":["Ideas","Evaluating","Confirmed","In Progress"]}'
+npx ws-workspace add decision-card '{"question":"Which direction?","options":[{"value":"a","label":"Option A"},{"value":"b","label":"Option B"}]}'
+npx ws-workspace add todo-list '{"title":"Action Items","items":["Research","Prototype","Ship"]}'
 ```
 
 The page updates in real-time via WebSocket. Users drag cards, click options, check boxes — all state flows back as structured JSON.
@@ -30,7 +30,7 @@ The page updates in real-time via WebSocket. Users drag cards, click options, ch
 ## Install (Global)
 
 ```bash
-npm install -g @comeonzhj/ws-workspace
+npm install -g ws-workspace
 ws-workspace start
 ```
 
@@ -129,18 +129,18 @@ If you're an AI agent reading this repo — here's how to get up and running:
 ### Install
 
 ```bash
-npm install -g @comeonzhj/ws-workspace
+npm install -g ws-workspace
 ```
 
 Or run directly:
 
 ```bash
-npx @comeonzhj/ws-workspace start --port 1989
+npx ws-workspace start --port 1989
 ```
 
 ### Workflow
 
-1. **Start the server**: `ws-workspace start` (or `npx @comeonzhj/ws-workspace start`)
+1. **Start the server**: `ws-workspace start` (or `npx ws-workspace start`)
 2. **Tell the human** the URL (e.g., `http://localhost:1989`)
 3. **Add components** via CLI as you work:
    - Use `heading` to section the workspace

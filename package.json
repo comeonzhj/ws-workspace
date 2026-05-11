@@ -1,5 +1,5 @@
 {
-  "name": "@comeonzhj/ws-workspace",
+  "name": "ws-workspace",
   "version": "1.0.0",
   "description": "A real-time workspace dashboard with WebSocket-powered components — kanban, todo, tables, forms, and decision cards. Control it from CLI, browser, or agent API.",
   "main": "server.js",
