@@ -1,5 +1,7 @@
 # WS Workspace
 
+**[中文](./README.zh-CN.md)** | English
+
 > From Markdown to HTML: a collaborative workspace where AI agents and humans share a living, interactive page.
 
 Inspired by [Thariq's "The Unreasonable Effectiveness of HTML"](https://x.com/trq212/status/2052809885763747935) — the idea that HTML is a far richer medium than Markdown for agent-human communication. WS Workspace takes this further: instead of agents *outputting* HTML, they **maintain an interactive workspace** that humans operate directly. The result is a two-way collaboration loop.
