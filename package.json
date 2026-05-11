@@ -1,0 +1,52 @@
+{
+  "name": "@comeonzhj/ws-workspace",
+  "version": "1.0.0",
+  "description": "A real-time workspace dashboard with WebSocket-powered components — kanban, todo, tables, forms, and decision cards. Control it from CLI, browser, or agent API.",
+  "main": "server.js",
+  "bin": {
+    "ws-workspace": "bin/ws-workspace.js"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "cli": "node bin/ws-workspace.js"
+  },
+  "keywords": [
+    "workspace",
+    "dashboard",
+    "websocket",
+    "kanban",
+    "todo",
+    "real-time",
+    "cli",
+    "agent",
+    "collaboration"
+  ],
+  "author": {
+    "name": "jiaai",
+    "url": "https://github.com/comeonzhj"
+  },
+  "license": "MIT",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comeonzhj/ws-workspace.git"
+  },
+  "bugs": {
+    "url": "https://github.com/comeonzhj/ws-workspace/issues"
+  },
+  "homepage": "https://github.com/comeonzhj/ws-workspace#readme",
+  "files": [
+    "bin/",
+    "server.js",
+    "ws-cli.js",
+    "public/",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "ws": "^8.20.0"
+  }
+}

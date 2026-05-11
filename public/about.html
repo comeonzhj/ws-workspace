@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WS Workspace — HTML 协作工作台</title>
+<style>
+  :root {
+    --bg: #f5f4ed;
+    --surface: #faf9f5;
+    --surface-2: #e8e6dc;
+    --surface-3: #e8e6dc;
+    --border: #f0eee6;
+    --text: #141413;
+    --text-2: #5e5d59;
+    --text-3: #87867f;
+    --accent: #c96442;
+    --accent-2: #d97757;
+    --accent-glow: rgba(201, 100, 66, 0.08);
+    --green: #5a8a5e;
+    --green-glow: rgba(90, 138, 94, 0.08);
+    --blue: #5e7fa0;
+    --orange: #c4823e;
+    --pink: #b56e8a;
+    --red: #c45a3c;
+    --yellow: #b89a3e;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.60;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: white;
+  }
+
+  /* ─── Nav ─── */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 40px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(245, 244, 237, 0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.3px;
+  }
+  .nav-logo .icon {
+    width: 24px; height: 24px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+  }
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    font-size: 13px;
+  }
+  .nav-links a {
+    color: var(--text-2);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* ─── Hero ─── */
+  .hero {
+    padding: 160px 40px 100px;
+    text-align: center;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 800px; height: 600px;
+    background: radial-gradient(ellipse, rgba(201,100,66,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--text-2);
+    margin-bottom: 32px;
+  }
+  .hero-badge .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .hero h1 {
+    font-size: clamp(36px, 5.5vw, 64px);
+    font-weight: 500;
+    letter-spacing: -1.5px;
+    line-height: 1.15;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+  .hero-sub {
+    font-size: 18px;
+    color: var(--text-2);
+    max-width: 600px;
+    margin: 0 auto 40px;
+    line-height: 1.60;
+  }
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .hero-cta:hover { background: var(--accent-2); transform: translateY(-1px); }
+
+  /* ─── Section ─── */
+  .section {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 80px 40px;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 32px;
+    font-weight: 500;
+    letter-spacing: -0.8px;
+    margin-bottom: 16px;
+  }
+  .section-desc {
+    font-size: 16px;
+    color: var(--text-2);
+    max-width: 640px;
+    margin-bottom: 48px;
+    line-height: 1.60;
+  }
+
+  /* ─── Paradigm Shift ─── */
+  .shift-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 24px;
+    align-items: stretch;
+    margin-bottom: 32px;
+  }
+  .shift-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    position: relative;
+  }
+  .shift-card.before { opacity: 0.6; }
+  .shift-card.after {
+    border-color: var(--accent);
+    box-shadow: 0px 0px 0px 1px var(--accent);
+  }
+  .shift-card .tag {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .shift-card.before .tag { background: var(--surface-3); color: var(--text-3); }
+  .shift-card.after .tag { background: var(--accent-glow); color: var(--accent); }
+  .shift-card h3 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .shift-card p {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.60;
+  }
+  .shift-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: var(--text-3);
+    padding: 0 8px;
+  }
+  .shift-card .example {
+    margin-top: 20px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-x: auto;
+  }
+
+  /* ─── Flow Diagram ─── */
+  .flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 40px 0;
+    flex-wrap: wrap;
+  }
+  .flow-node {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 28px;
+    text-align: center;
+    min-width: 160px;
+  }
+  .flow-node .icon { font-size: 28px; margin-bottom: 8px; }
+  .flow-node .label { font-size: 14px; font-weight: 500; }
+  .flow-node .sub { font-size: 12px; color: var(--text-2); margin-top: 4px; }
+  .flow-node.highlight {
+    border-color: var(--accent);
+    box-shadow: 0px 0px 0px 1px var(--accent);
+  }
+  .flow-arrow {
+    color: var(--text-3);
+    font-size: 20px;
+    padding: 0 16px;
+  }
+
+  /* ─── Components Grid ─── */
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .comp-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    transition: all 0.2s;
+    cursor: default;
+  }
+  .comp-card:hover {
+    border-color: var(--text-3);
+    transform: translateY(-2px);
+  }
+  .comp-card .emoji {
+    font-size: 32px;
+    margin-bottom: 14px;
+    display: block;
+  }
+  .comp-card h4 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .comp-card p {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+  .comp-card code {
+    font-size: 11px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    border-radius: 5px;
+    color: var(--green);
+    display: block;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  /* ─── Interactive Demo ─── */
+  .demo-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .demo-bar {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface-2);
+  }
+  .demo-bar .dots {
+    display: flex;
+    gap: 6px;
+  }
+  .demo-bar .dots span {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--surface-3);
+  }
+  .demo-bar .dots span:nth-child(1) { background: #e8706a; }
+  .demo-bar .dots span:nth-child(2) { background: #e8b96a; }
+  .demo-bar .dots span:nth-child(3) { background: #5a8a5e; }
+  .demo-bar .url {
+    font-size: 12px;
+    color: var(--text-3);
+    background: var(--bg);
+    padding: 4px 12px;
+    border-radius: 4px;
+  }
+  .demo-content {
+    padding: 32px;
+  }
+
+  /* Demo: Live Decision Card */
+  .demo-decision {
+    margin-bottom: 24px;
+  }
+  .demo-decision .q {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  .demo-opts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .demo-opt {
+    padding: 14px 18px;
+    background: var(--surface-2);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .demo-opt:hover { border-color: var(--accent); }
+  .demo-opt.active {
+    border-color: var(--green);
+    background: var(--green-glow);
+  }
+  .demo-opt .radio {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .demo-opt.active .radio {
+    border-color: var(--green);
+    background: var(--green);
+  }
+  .demo-opt.active .radio::after { content: '✓'; color: white; font-size: 11px; font-weight: bold; }
+  .demo-opt .opt-text { font-size: 14px; }
+  .demo-feedback {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    font-size: 13px;
+    color: var(--text-2);
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    display: none;
+    line-height: 1.6;
+  }
+  .demo-feedback.show { display: block; animation: fadeUp 0.3s ease-out; }
+
+  /* ─── Architecture ─── */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .arch-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+  }
+  .arch-box.full { grid-column: 1 / -1; }
+  .arch-box h4 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .arch-box h4 .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+  .arch-box ul {
+    list-style: none;
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.8;
+  }
+  .arch-box ul li::before {
+    content: '→';
+    color: var(--text-3);
+    margin-right: 8px;
+  }
+  .arch-box .code-block {
+    margin-top: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 12px;
+    color: var(--text-2);
+    white-space: pre;
+    overflow-x: auto;
+    line-height: 1.7;
+  }
+
+  /* ─── Comparison Table ─── */
+  .cmp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+  .cmp-table th {
+    text-align: left;
+    padding: 12px 16px;
+    background: var(--surface-2);
+    color: var(--text-2);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cmp-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .cmp-table tr:last-child td { border-bottom: none; }
+  .cmp-table .check { color: var(--green); }
+  .cmp-table .cross { color: var(--text-3); }
+  .cmp-table .mid { color: var(--yellow); }
+
+  /* ─── Quote ─── */
+  .quote-block {
+    border-left: 3px solid var(--accent);
+    padding: 24px 32px;
+    background: var(--accent-glow);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin: 40px 0;
+  }
+  .quote-block p {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.6;
+    letter-spacing: -0.2px;
+  }
+  .quote-block .attr {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--text-2);
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    text-align: center;
+    padding: 60px 40px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .footer p {
+    font-size: 13px;
+    color: var(--text-3);
+    line-height: 1.8;
+  }
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .footer a:hover { text-decoration: underline; }
+
+  /* ─── Animations ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 768px) {
+    .nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 120px 20px 60px; }
+    .section { padding: 60px 20px; }
+    .shift-grid { grid-template-columns: 1fr; }
+    .shift-arrow { transform: rotate(90deg); padding: 8px 0; }
+    .arch-grid { grid-template-columns: 1fr; }
+    .flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); padding: 8px 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="icon">⚡</div>
+    WS Workspace
+  </div>
+  <div class="nav-links">
+    <a href="#shift">范式转换</a>
+    <a href="#how">工作原理</a>
+    <a href="#components">组件体系</a>
+    <a href="#demo">实时演示</a>
+    <a href="#arch">架构</a>
+    <a href="http://101.47.21.77:1989" target="_blank">打开工作台 ↗</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge"><span class="dot"></span> 2026 · 实验性项目</div>
+  <h1>从 Markdown 到 <em>HTML 工作台</em><br>Agent × 人类的协作新范式</h1>
+  <p class="hero-sub">
+    Agent 不再把 Markdown 塞进聊天窗口，而是维护一个可交互的 HTML 页面。
+    人类直接在页面上操作，Agent 读取状态继续推进。
+    信息不再"读后即焚"，而是在网页上持续生长。
+  </p>
+  <a href="#demo" class="hero-cta">↓ 看看它是怎么工作的</a>
+</section>
+
+<!-- The Shift -->
+<section class="section fade-in" id="shift">
+  <div class="section-label">范式转换</div>
+  <div class="section-title">从"读 Markdown"到"操作工作台"</div>
+  <div class="section-desc">
+    Thariq 在《The Unreasonable Effectiveness of HTML》中指出 HTML 比 Markdown 更适合作为 Agent 输出。
+    我们在此基础上更进一步：让 HTML 成为双向协作的介质。
+  </div>
+
+  <div class="shift-grid">
+    <div class="shift-card before">
+      <span class="tag">Before · Markdown</span>
+      <h3>线性对话，读后即焚</h3>
+      <p>Agent 输出一大段 Markdown → 人类读完 → 用自然语言回复 → Agent 再输出。
+      上下文存在于对话流中，滚动即消失。信息密度低，无法交互。</p>
+      <div class="example">Agent: 这是 Q2 的功能优先级...
+1. 功能 A (P0)
+2. 功能 B (P1)
+3. 功能 C (P2)
+
+你觉得怎么样？
+
+Human: 功能 B 应该提到 P0，
+        功能 A 降到 P1
+
+Agent: 好的，更新一下...
+1. 功能 B (P0)
+2. 功能 A (P1)
+...</div>
+    </div>
+
+    <div class="shift-arrow">→</div>
+
+    <div class="shift-card after">
+      <span class="tag">After · HTML 工作台</span>
+      <h3>持续生长，双向交互</h3>
+      <p>Agent 通过指令往页面注入组件 → 人类直接拖拽、选择、填写 → Agent 读取结构化状态继续推进。
+      页面是持久的画布，信息在上面积累而非流走。</p>
+      <div class="example">Agent CLI: ws add kanban \
+  --columns "想法,评估中,已确认,开发中"
+
+Agent CLI: ws add decision-card \
+  --question "先做哪个？" \
+  --options "功能A|功能B|功能C"
+
+[用户在页面上拖拽卡片，点选方案]
+
+Agent API: GET /api/state
+→ { "selected": "功能B",
+    "kanban": { "已确认": ["功能B"] } }
+
+Agent: 收到，我按功能B优先来推进...</div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="section fade-in" id="how">
+  <div class="section-label">工作原理</div>
+  <div class="section-title">三步循环</div>
+  <div class="section-desc">
+    Agent 注入 → 人类操作 → 状态回流。这不是传统的"人提问 AI 回答"，而是共享一个工作空间。
+  </div>
+
+  <div class="flow">
+    <div class="flow-node">
+      <div class="icon">🤖</div>
+      <div class="label">Agent</div>
+      <div class="sub">分析、规划、决策</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node highlight">
+      <div class="icon">⚡</div>
+      <div class="label">CLI 指令</div>
+      <div class="sub">ws add / update / state</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node highlight">
+      <div class="icon">🌐</div>
+      <div class="label">HTML 工作台</div>
+      <div class="sub">可交互的网页</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="icon">👤</div>
+      <div class="label">人类</div>
+      <div class="sub">拖拽、选择、填写</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node highlight">
+      <div class="icon">📡</div>
+      <div class="label">WebSocket</div>
+      <div class="sub">状态实时回流</div>
+    </div>
+    <div class="flow-arrow">↻</div>
+  </div>
+</section>
+
+<!-- Components -->
+<section class="section fade-in" id="components">
+  <div class="section-label">组件体系</div>
+  <div class="section-title">Agent 用指令，不用写代码</div>
+  <div class="section-desc">
+    每个 <code>ws add</code> 命令生成一个自包含的 Web Component。Agent 不碰 HTML/CSS/JS，只描述意图。
+  </div>
+
+  <div class="comp-grid">
+    <div class="comp-card">
+      <span class="emoji">📋</span>
+      <h4>Kanban 看板</h4>
+      <p>可拖拽的多列看板。用于优先级排序、状态跟踪、任务分拣。</p>
+      <code>ws add kanban --columns "待办,进行中,完成"</code>
+    </div>
+    <div class="comp-card">
+      <span class="emoji">🤔</span>
+      <h4>Decision Card 决策卡</h4>
+      <p>单选题 + 备注。用于方案选择、A/B 决策、方向确认。</p>
+      <code>ws add decision-card --question "选哪个？" --options "A|B|C"</code>
+    </div>
+    <div class="comp-card">
+      <span class="emoji">✅</span>
+      <h4>Todo List 待办</h4>
+      <p>可勾选的任务列表。用于 checklist、行动项、验收标准。</p>
+      <code>ws add todo-list --title "上线前检查" --items "测试,文档,部署"</code>
+    </div>
+    <div class="comp-card">
+      <span class="emoji">📝</span>
+      <h4>Form 表单</h4>
+      <p>结构化输入：文本、下拉、多行。用于收集参数、配置、反馈。</p>
+      <code>ws add form --fields '[{"name":"title","type":"text"}]'</code>
+    </div>
+    <div class="comp-card">
+      <span class="emoji">📊</span>
+      <h4>Table 表格</h4>
+      <p>数据表格展示。用于对比矩阵、规格参数、人员分配。</p>
+      <code>ws add table --headers "功能,优先级,负责人"</code>
+    </div>
+    <div class="comp-card">
+      <span class="emoji">✏️</span>
+      <h4>Rich Editor 编辑器</h4>
+      <p>富文本编辑区。用于自由书写、头脑风暴、方案描述。</p>
+      <code>ws add rich-editor --placeholder "写下你的想法..."</code>
+    </div>
+    <div class="comp-card">
+      <span class="emoji">📌</span>
+      <h4>Heading 标题</h4>
+      <p>标题 + 副标题。用于分区、章节标注、上下文说明。</p>
+      <code>ws add heading --text "第二轮：技术方案" --level 1</code>
+    </div>
+    <div class="comp-card">
+      <span class="emoji">🧩</span>
+      <h4>更多组件…</h4>
+      <p>投票器、时间线、思维导图、图片标注。组件体系可扩展。</p>
+      <code>ws add vote --question "给方案打分" --scale 5</code>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive Demo -->
+<section class="section fade-in" id="demo">
+  <div class="section-label">实时演示</div>
+  <div class="section-title">这本身就是一个工作台</div>
+  <div class="section-desc">
+    下面是一个嵌入的实时交互组件。你的每一次点击都会产生一个事件——这就是 Agent 能"看到"的数据。
+  </div>
+
+  <div class="demo-area">
+    <div class="demo-bar">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div class="url">localhost:1989 — Decision Card</div>
+    </div>
+    <div class="demo-content">
+      <div class="demo-decision">
+        <div class="q">你最想先用这个工作台做什么？</div>
+        <div class="demo-opts" id="demoOpts">
+          <div class="demo-opt" data-val="plan" onclick="demoSelect(this)">
+            <div class="radio"></div>
+            <div class="opt-text">用看板做项目规划，Agent 读取进度</div>
+          </div>
+          <div class="demo-opt" data-val="brainstorm" onclick="demoSelect(this)">
+            <div class="radio"></div>
+            <div class="opt-text">头脑风暴，Agent 往页面加决策卡让我选</div>
+          </div>
+          <div class="demo-opt" data-val="review" onclick="demoSelect(this)">
+            <div class="radio"></div>
+            <div class="opt-text">代码/方案评审，Agent 用表格展示对比</div>
+          </div>
+          <div class="demo-opt" data-val="config" onclick="demoSelect(this)">
+            <div class="radio"></div>
+            <div class="opt-text">配置收集，Agent 用表单让我填参数</div>
+          </div>
+        </div>
+        <div class="demo-feedback" id="demoFeedback"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Comparison -->
+<section class="section fade-in" id="compare">
+  <div class="section-label">对比</div>
+  <div class="section-title">HTML 工作台 vs 传统方案</div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+    <table class="cmp-table">
+      <thead>
+        <tr>
+          <th style="width:25%">能力</th>
+          <th>Markdown 聊天</th>
+          <th>Claude Artifacts</th>
+          <th>HTML 工作台</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>信息密度</strong></td>
+          <td class="cross">纯文本，无视觉结构</td>
+          <td class="check">富 HTML 渲染</td>
+          <td class="check">富 HTML + 交互组件</td>
+        </tr>
+        <tr>
+          <td><strong>双向交互</strong></td>
+          <td class="cross">✕ 人类只能打字回复</td>
+          <td class="mid">△ 有限的表单交互</td>
+          <td class="check">✓ 拖拽/选择/填写，结构化回传</td>
+        </tr>
+        <tr>
+          <td><strong>状态持久性</strong></td>
+          <td class="cross">对话滚动即消失</td>
+          <td class="mid">Artifact 内可保留</td>
+          <td class="check">✓ 持久页面，状态累积</td>
+        </tr>
+        <tr>
+          <td><strong>Agent 驱动</strong></td>
+          <td class="mid">Agent 写文本</td>
+          <td class="mid">Agent 生成代码</td>
+          <td class="check">✓ CLI 指令注入组件</td>
+        </tr>
+        <tr>
+          <td><strong>可分享性</strong></td>
+          <td class="cross">截图/复制文本</td>
+          <td class="mid">需 Claude 账号</td>
+          <td class="check">✓ 链接直接打开 / 导出单文件</td>
+        </tr>
+        <tr>
+          <td><strong>实时协作</strong></td>
+          <td class="cross">✕</td>
+          <td class="cross">✕</td>
+          <td class="check">✓ 多人同页面 + Agent 协调</td>
+        </tr>
+        <tr>
+          <td><strong>Agent 读取状态</strong></td>
+          <td class="cross">需解析自然语言</td>
+          <td class="cross">无法读取用户操作</td>
+          <td class="check">✓ 结构化 JSON API</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Architecture -->
+<section class="section fade-in" id="arch">
+  <div class="section-label">技术架构</div>
+  <div class="section-title">三层设计</div>
+  <div class="section-desc">
+    CLI 做主干（Agent 的手），MCP 做实时通道（Agent 的耳），Skill 做使用指南（Agent 的脑）。
+  </div>
+
+  <div class="arch-grid">
+    <div class="arch-box">
+      <h4><span class="dot" style="background:var(--green)"></span> CLI 层 — Agent 的手</h4>
+      <ul>
+        <li>Agent 的主要接口，跟调 shell 命令一样</li>
+        <li><code>ws init</code> · <code>ws add</code> · <code>ws state</code> · <code>ws update</code></li>
+        <li>每个操作都是声明式的，不碰前端代码</li>
+        <li>返回 JSON，Agent 可直接解析</li>
+      </ul>
+      <div class="code-block">$ ws add kanban --columns "想法,评估中,已确认"
+$ ws state get --component kanban-1
+→ { "想法": ["功能A","功能B"], "评估中": [] }</div>
+    </div>
+
+    <div class="arch-box">
+      <h4><span class="dot" style="background:var(--blue)"></span> MCP 层 — Agent 的耳</h4>
+      <ul>
+        <li>WebSocket 双向通道，实时监听用户操作</li>
+        <li><code>wait_for_user</code> — Agent 可暂停等待交互</li>
+        <li>用户拖拽/选择/填写 → 结构化事件推送</li>
+        <li>适合需要"等人类做决定"的场景</li>
+      </ul>
+      <div class="code-block">mcp.workspace.wait_for_user({
+  component: "decision-card-1",
+  timeout: 300
+})
+→ { selected: "方案B", comment: "更完整" }</div>
+    </div>
+
+    <div class="arch-box">
+      <h4><span class="dot" style="background:var(--orange)"></span> 服务器 — 状态中枢</h4>
+      <ul>
+        <li>Express + WebSocket，同时做静态服务和 API</li>
+        <li>维护全局状态 JSON（组件列表 + 事件日志）</li>
+        <li>REST API 供 CLI/MCP 调用</li>
+        <li>WebSocket 推送给浏览器实时刷新</li>
+      </ul>
+    </div>
+
+    <div class="arch-box">
+      <h4><span class="dot" style="background:var(--pink)"></span> 前端 — 可交互页面</h4>
+      <ul>
+        <li>单 HTML 文件 + 内联 Web Components</li>
+        <li>暖色调浅色主题，卡片式布局</li>
+        <li>用户操作自动同步到服务器</li>
+        <li>未来可导出为独立 HTML 离线使用</li>
+      </ul>
+    </div>
+
+    <div class="arch-box full">
+      <h4><span class="dot" style="background:var(--accent)"></span> 部署模式</h4>
+      <ul>
+        <li><strong>本地模式（默认）</strong>：ws init 在本机起服务，localhost 访问。适合个人开发、单人协作。</li>
+        <li><strong>云端模式（可选）</strong>：服务部署在云服务器，公网 IP + 端口访问。适合远程协作、团队共享、演示。</li>
+        <li><strong>离线模式（规划中）</strong>：导出为单个 HTML 文件，所有状态内嵌，无需服务器。适合邮件分享、归档。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Quote -->
+<section class="section fade-in">
+  <div class="quote-block">
+    <p>"我使用 HTML 的真正原因是我觉得与 Claude 的互动更加紧密了。我比以往任何时候都更深入地参与其中。"</p>
+    <div class="attr">— Thariq, 《The Unreasonable Effectiveness of HTML》, 2026</div>
+  </div>
+  <div class="quote-block" style="margin-top:20px;">
+    <p>"从输出格式升级到协作介质。Agent 不再写给人看，而是跟人一起干。"</p>
+    <div class="attr">— WS Workspace, 你正在看的这个东西</div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <p>
+    WS Workspace · 实验性项目 · 2026<br>
+    灵感来源：<a href="https://x.com/trq212/status/2052809885763747935" target="_blank">Thariq — The Unreasonable Effectiveness of HTML</a><br>
+    <a href="http://101.47.21.77:1989" target="_blank">打开工作台 ↗</a>
+  </p>
+</footer>
+
+<script>
+// ─── Demo interaction ─────────────────────────────────
+function demoSelect(el) {
+  document.querySelectorAll('.demo-opt').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  const val = el.dataset.val;
+  const fb = document.getElementById('demoFeedback');
+
+  const responses = {
+    plan: `{
+  "event": "user_choice",
+  "component": "decision-card-demo",
+  "data": { "selected": "plan" },
+  "ts": ${Date.now()}
+}
+→ Agent 收到 → 自动添加 kanban 组件到工作台`,
+    brainstorm: `{
+  "event": "user_choice",
+  "component": "decision-card-demo",
+  "data": { "selected": "brainstorm" },
+  "ts": ${Date.now()}
+}
+→ Agent 收到 → 生成 3 张决策卡 + 富文本编辑器`,
+    review: `{
+  "event": "user_choice",
+  "component": "decision-card-demo",
+  "data": { "selected": "review" },
+  "ts": ${Date.now()}
+}
+→ Agent 收到 → 注入对比表格 + 注释编辑器`,
+    config: `{
+  "event": "user_choice",
+  "component": "decision-card-demo",
+  "data": { "selected": "config" },
+  "ts": ${Date.now()}
+}
+→ Agent 收到 → 生成参数表单让你填写`
+  };
+
+  fb.textContent = responses[val];
+  fb.classList.add('show');
+}
+
+// ─── Scroll animations ────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

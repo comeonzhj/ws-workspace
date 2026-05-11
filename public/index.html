@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WS Workspace</title>
+<style>
+  :root {
+    --bg: #f5f4ed;
+    --surface: #faf9f5;
+    --surface-2: #e8e6dc;
+    --border: #f0eee6;
+    --text: #141413;
+    --text-2: #5e5d59;
+    --text-3: #87867f;
+    --accent: #c96442;
+    --accent-2: #d97757;
+    --green: #5a8a5e;
+    --red: #c45a3c;
+    --yellow: #b89a3e;
+    --blue: #5e7fa0;
+    --radius: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.60;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 22px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header h1 .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .status-bar {
+    font-size: 13px;
+    color: var(--text-2);
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .status-bar .count {
+    background: var(--surface-2);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+  }
+
+  /* ─── Container ─── */
+  .workspace {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ─── Component Base ─── */
+  .ws-component {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    animation: fadeSlideIn 0.3s ease-out;
+  }
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .ws-comp-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+  .ws-comp-header .comp-type {
+    background: var(--surface-2);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .ws-comp-body { padding: 20px; }
+
+  /* ─── Heading ─── */
+  .ws-heading .ws-comp-body {
+    padding: 24px 20px;
+  }
+  .ws-heading h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 500; }
+  .ws-heading h2 { font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 500; }
+  .ws-heading h3 { font-family: Georgia, 'Times New Roman', serif; font-size: 18px; font-weight: 500; color: var(--text-2); }
+  .ws-heading p { font-size: 15px; color: var(--text-2); margin-top: 8px; }
+
+  /* ─── Kanban ─── */
+  .kanban-board {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .kanban-col {
+    flex: 1;
+    min-width: 180px;
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .kanban-col-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .kanban-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    cursor: grab;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .kanban-card:hover { border-color: var(--accent); }
+  .kanban-card.dragging { opacity: 0.5; transform: rotate(2deg); }
+  .kanban-add {
+    width: 100%;
+    padding: 8px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    color: var(--text-2);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .kanban-add:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ─── Decision Card ─── */
+  .decision-question {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .decision-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .decision-option {
+    padding: 14px 18px;
+    background: var(--surface-2);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .decision-option:hover { border-color: var(--accent); }
+  .decision-option.selected {
+    border-color: var(--accent);
+    background: rgba(201, 100, 66, 0.08);
+  }
+  .decision-option .opt-label { font-size: 15px; font-weight: 500; }
+  .decision-option .opt-desc { font-size: 13px; color: var(--text-2); margin-top: 4px; }
+  .decision-comment {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    color: var(--text);
+    font-size: 14px;
+    resize: vertical;
+    min-height: 60px;
+    font-family: inherit;
+  }
+  .decision-comment:focus { outline: none; border-color: var(--accent); }
+
+  /* ─── Todo List ─── */
+  .todo-items { display: flex; flex-direction: column; gap: 6px; }
+  .todo-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    transition: background 0.1s;
+  }
+  .todo-item:hover { background: var(--surface-2); }
+  .todo-check {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .todo-check.done {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .todo-check.done::after { content: '✓'; color: white; font-size: 12px; font-weight: bold; }
+  .todo-text { font-size: 15px; flex: 1; }
+  .todo-text.done { text-decoration: line-through; color: var(--text-2); }
+  .todo-add-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .todo-add-input {
+    flex: 1;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .todo-add-input:focus { outline: none; border-color: var(--accent); }
+  .todo-add-btn {
+    padding: 8px 16px;
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .todo-add-btn:hover { background: var(--accent-2); }
+
+  /* ─── Form ─── */
+  .ws-form { display: flex; flex-direction: column; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 13px; font-weight: 500; color: var(--text-2); }
+  .form-input, .form-select, .form-textarea {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none; border-color: var(--accent);
+  }
+  .form-textarea { resize: vertical; min-height: 80px; }
+  .form-submit {
+    padding: 10px 24px;
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    align-self: flex-start;
+  }
+  .form-submit:hover { background: var(--accent-2); }
+
+  /* ─── Table ─── */
+  .ws-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .ws-table th {
+    text-align: left;
+    padding: 10px 12px;
+    background: var(--surface-2);
+    color: var(--text-2);
+    font-weight: 500;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ws-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ws-table tr:last-child td { border-bottom: none; }
+  .ws-table tr:hover td { background: var(--surface-2); }
+
+  /* ─── Rich Editor ─── */
+  .rich-editor {
+    min-height: 120px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    outline: none;
+    font-family: inherit;
+  }
+  .rich-editor:focus { border-color: var(--accent); }
+  .rich-editor:empty::before {
+    content: attr(data-placeholder);
+    color: var(--text-2);
+    pointer-events: none;
+  }
+
+  /* ─── Empty state ─── */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-2);
+  }
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+  .empty-state p { font-size: 15px; }
+
+  /* ─── Toast ─── */
+  .toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 999;
+  }
+  .toast {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 13px;
+    color: var(--text);
+    animation: toastIn 0.3s ease-out;
+    max-width: 320px;
+    box-shadow: 0px 0px 0px 1px rgba(20,20,19,0.04), 0 4px 12px rgba(20,20,19,0.08);
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span class="dot" id="statusDot"></span> <span id="titleDisplay">工作台</span></h1>
+  <div class="status-bar">
+    <span class="count" id="compCount">0 组件</span>
+    <span id="connStatus">连接中...</span>
+  </div>
+</div>
+
+<div class="workspace" id="workspace">
+  <div class="empty-state" id="emptyState">
+    <div class="icon">🔧</div>
+    <p>等待 Agent 添加组件...</p>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script>
+// ─── State ───────────────────────────────────────────
+let components = [];
+let ws = null;
+let reconnectTimer = null;
+
+// ─── Elements ────────────────────────────────────────
+const $workspace = document.getElementById('workspace');
+const $emptyState = document.getElementById('emptyState');
+const $titleDisplay = document.getElementById('titleDisplay');
+const $compCount = document.getElementById('compCount');
+const $connStatus = document.getElementById('connStatus');
+const $toasts = document.getElementById('toasts');
+const $statusDot = document.getElementById('statusDot');
+
+// ─── Toast ───────────────────────────────────────────
+function toast(msg) {
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  $toasts.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ─── WebSocket ───────────────────────────────────────
+function connect() {
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  ws = new WebSocket(`${proto}://${location.host}`);
+
+  ws.onopen = () => {
+    $connStatus.textContent = '已连接';
+    $statusDot.style.background = 'var(--green)';
+    if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+  };
+
+  ws.onclose = () => {
+    $connStatus.textContent = '已断开';
+    $statusDot.style.background = 'var(--red)';
+    reconnectTimer = setTimeout(connect, 2000);
+  };
+
+  ws.onerror = () => ws.close();
+
+  ws.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    handleMessage(msg);
+  };
+}
+
+function handleMessage(msg) {
+  switch (msg.type) {
+    case 'init':
+      $titleDisplay.textContent = msg.payload.title || '工作台';
+      components = msg.payload.components || [];
+      renderAll();
+      break;
+    case 'title_update':
+      $titleDisplay.textContent = msg.payload.title;
+      break;
+    case 'component_added':
+      components.push(msg.payload);
+      renderAll();
+      toast(`✨ 已添加 ${msg.payload.type} 组件`);
+      break;
+    case 'component_updated': {
+      const idx = components.findIndex(c => c.id === msg.payload.id);
+      if (idx !== -1) components[idx] = msg.payload;
+      renderAll();
+      break;
+    }
+    case 'component_removed':
+      components = components.filter(c => c.id !== msg.payload.id);
+      renderAll();
+      toast('🗑️ 组件已移除');
+      break;
+    case 'reset':
+      components = [];
+      renderAll();
+      toast('🔄 工作台已重置');
+      break;
+    case 'state_update':
+      // 来自其他浏览器标签的状态更新
+      if (msg.payload.new_state) {
+        const comp = components.find(c => c.id === msg.payload.component_id);
+        if (comp) comp.state = { ...comp.state, ...msg.payload.new_state };
+        renderAll();
+      }
+      break;
+  }
+}
+
+// ─── Send event to server ────────────────────────────
+function sendEvent(componentId, event, data, newState) {
+  if (ws && ws.readyState === 1) {
+    ws.send(JSON.stringify({
+      type: 'user_event',
+      component_id: componentId,
+      event,
+      data,
+      new_state: newState
+    }));
+  }
+}
+
+// ─── Render ──────────────────────────────────────────
+function renderAll() {
+  $compCount.textContent = `${components.length} 组件`;
+  if (components.length === 0) {
+    $workspace.innerHTML = '';
+    $workspace.appendChild($emptyState);
+    $emptyState.style.display = '';
+    return;
+  }
+  $workspace.innerHTML = '';
+  components.forEach(comp => {
+    const el = renderComponent(comp);
+    if (el) $workspace.appendChild(el);
+  });
+}
+
+function renderComponent(comp) {
+  switch (comp.type) {
+    case 'heading': return renderHeading(comp);
+    case 'kanban': return renderKanban(comp);
+    case 'decision-card': return renderDecision(comp);
+    case 'todo-list': return renderTodo(comp);
+    case 'form': return renderForm(comp);
+    case 'table': return renderTable(comp);
+    case 'rich-editor': return renderRichEditor(comp);
+    default: return null;
+  }
+}
+
+function wrapper(comp, title) {
+  const div = document.createElement('div');
+  div.className = 'ws-component';
+  div.innerHTML = `
+    <div class="ws-comp-header">
+      <span>${title}</span>
+      <span class="comp-type">${comp.type}</span>
+    </div>
+    <div class="ws-comp-body" id="body-${comp.id}"></div>
+  `;
+  return div;
+}
+
+// ─── Heading ─────────────────────────────────────────
+function renderHeading(comp) {
+  const el = wrapper(comp, '标题');
+  const body = el.querySelector('.ws-comp-body');
+  const level = comp.config.level || 1;
+  const tag = `h${level}`;
+  body.innerHTML = `<${tag}>${esc(comp.config.text || '')}</${tag}>`;
+  if (comp.config.subtitle) body.innerHTML += `<p>${esc(comp.config.subtitle)}</p>`;
+  el.classList.add('ws-heading');
+  return el;
+}
+
+// ─── Kanban ──────────────────────────────────────────
+function renderKanban(comp) {
+  const el = wrapper(comp, comp.config.title || '看板');
+  const body = el.querySelector('.ws-comp-body');
+  const columns = Object.keys(comp.state);
+
+  let html = '<div class="kanban-board">';
+  columns.forEach(col => {
+    const cards = comp.state[col] || [];
+    html += `<div class="kanban-col" data-col="${esc(col)}" ondragover="event.preventDefault()" ondrop="kanbanDrop(event, '${comp.id}', '${esc(col)}')">`;
+    html += `<div class="kanban-col-title">${esc(col)} · ${cards.length}</div>`;
+    cards.forEach((card, ci) => {
+      html += `<div class="kanban-card" draggable="true" data-card="${ci}" data-from="${esc(col)}" ondragstart="kanbanDragStart(event)">${esc(card)}</div>`;
+    });
+    html += `<button class="kanban-add" onclick="kanbanAddCard('${comp.id}', '${esc(col)}')">+ 添加</button>`;
+    html += '</div>';
+  });
+  html += '</div>';
+  body.innerHTML = html;
+  return el;
+}
+
+let dragData = {};
+function kanbanDragStart(e) {
+  dragData = {
+    cardIdx: Number(e.target.dataset.card),
+    fromCol: e.target.dataset.from
+  };
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => e.target.classList.remove('dragging'), 0);
+}
+function kanbanDrop(e, compId, toCol) {
+  e.preventDefault();
+  const comp = components.find(c => c.id === compId);
+  if (!comp || dragData.fromCol === toCol) return;
+  const card = comp.state[dragData.fromCol].splice(dragData.cardIdx, 1)[0];
+  comp.state[toCol].push(card);
+  sendEvent(compId, 'card_moved', { card, from: dragData.fromCol, to: toCol }, comp.state);
+  renderAll();
+}
+function kanbanAddCard(compId, col) {
+  const text = prompt('卡片内容:');
+  if (!text) return;
+  const comp = components.find(c => c.id === compId);
+  comp.state[col].push(text);
+  sendEvent(compId, 'card_added', { column: col, text }, comp.state);
+  renderAll();
+}
+
+// ─── Decision Card ───────────────────────────────────
+function renderDecision(comp) {
+  const el = wrapper(comp, comp.config.title || '决策');
+  const body = el.querySelector('.ws-comp-body');
+  const options = comp.config.options || [];
+
+  let html = `<div class="decision-question">${esc(comp.config.question || '请选择')}</div>`;
+  html += '<div class="decision-options">';
+  options.forEach((opt, i) => {
+    const selected = comp.state.selected === opt.value;
+    html += `<div class="decision-option ${selected ? 'selected' : ''}" onclick="decisionSelect('${comp.id}', '${esc(opt.value)}')">`;
+    html += `<div><div class="opt-label">${esc(opt.label || opt.value)}</div>`;
+    if (opt.description) html += `<div class="opt-desc">${esc(opt.description)}</div>`;
+    html += '</div>';
+    html += `<span>${selected ? '✓' : ''}</span>`;
+    html += '</div>';
+  });
+  html += '</div>';
+  html += `<textarea class="decision-comment" placeholder="补充说明（可选）..." oninput="decisionComment('${comp.id}', this.value)">${esc(comp.state.comment || '')}</textarea>`;
+  body.innerHTML = html;
+  return el;
+}
+function decisionSelect(compId, value) {
+  const comp = components.find(c => c.id === compId);
+  comp.state.selected = value;
+  sendEvent(compId, 'user_choice', { selected: value }, comp.state);
+  renderAll();
+  toast(`✅ 你选择了: ${value}`);
+}
+function decisionComment(compId, text) {
+  const comp = components.find(c => c.id === compId);
+  comp.state.comment = text;
+  sendEvent(compId, 'comment_changed', { comment: text }, comp.state);
+}
+
+// ─── Todo List ───────────────────────────────────────
+function renderTodo(comp) {
+  const el = wrapper(comp, comp.config.title || '待办');
+  const body = el.querySelector('.ws-comp-body');
+  const items = comp.state.items || [];
+
+  let html = '<div class="todo-items">';
+  items.forEach(item => {
+    html += `<div class="todo-item">`;
+    html += `<div class="todo-check ${item.done ? 'done' : ''}" onclick="todoToggle('${comp.id}', '${item.id}')"></div>`;
+    html += `<span class="todo-text ${item.done ? 'done' : ''}">${esc(item.text)}</span>`;
+    html += '</div>';
+  });
+  html += '</div>';
+  html += `<div class="todo-add-row">
+    <input class="todo-add-input" id="todo-input-${comp.id}" placeholder="添加新任务..." onkeydown="if(event.key==='Enter')todoAdd('${comp.id}')">
+    <button class="todo-add-btn" onclick="todoAdd('${comp.id}')">添加</button>
+  </div>`;
+  body.innerHTML = html;
+  return el;
+}
+function todoToggle(compId, itemId) {
+  const comp = components.find(c => c.id === compId);
+  const item = comp.state.items.find(i => i.id === itemId);
+  item.done = !item.done;
+  sendEvent(compId, 'todo_toggled', { itemId, done: item.done }, comp.state);
+  renderAll();
+}
+function todoAdd(compId) {
+  const input = document.getElementById(`todo-input-${compId}`);
+  const text = input.value.trim();
+  if (!text) return;
+  const comp = components.find(c => c.id === compId);
+  const newItem = { id: Math.random().toString(36).slice(2, 10), text, done: false };
+  comp.state.items.push(newItem);
+  sendEvent(compId, 'todo_added', { text }, comp.state);
+  renderAll();
+}
+
+// ─── Form ────────────────────────────────────────────
+function renderForm(comp) {
+  const el = wrapper(comp, comp.config.title || '表单');
+  const body = el.querySelector('.ws-comp-body');
+  const fields = comp.config.fields || [];
+
+  let html = '<div class="ws-form">';
+  fields.forEach(f => {
+    html += `<div class="form-group"><label class="form-label">${esc(f.label || f.name)}</label>`;
+    if (f.type === 'textarea') {
+      html += `<textarea class="form-textarea" data-field="${f.name}" oninput="formInput('${comp.id}', '${f.name}', this.value)">${esc(comp.state.values[f.name] || '')}</textarea>`;
+    } else if (f.type === 'select') {
+      html += `<select class="form-select" data-field="${f.name}" onchange="formInput('${comp.id}', '${f.name}', this.value)">`;
+      html += `<option value="">请选择...</option>`;
+      (f.options || []).forEach(o => {
+        const sel = comp.state.values[f.name] === o ? 'selected' : '';
+        html += `<option value="${esc(o)}" ${sel}>${esc(o)}</option>`;
+      });
+      html += '</select>';
+    } else {
+      html += `<input class="form-input" type="${f.type || 'text'}" data-field="${f.name}" value="${esc(comp.state.values[f.name] || '')}" oninput="formInput('${comp.id}', '${f.name}', this.value)">`;
+    }
+    html += '</div>';
+  });
+  html += `<button class="form-submit" onclick="formSubmit('${comp.id}')">提交</button>`;
+  html += '</div>';
+  body.innerHTML = html;
+  return el;
+}
+function formInput(compId, field, value) {
+  const comp = components.find(c => c.id === compId);
+  comp.state.values[field] = value;
+}
+function formSubmit(compId) {
+  const comp = components.find(c => c.id === compId);
+  sendEvent(compId, 'form_submitted', { values: comp.state.values }, comp.state);
+  toast('📋 表单已提交');
+}
+
+// ─── Table ───────────────────────────────────────────
+function renderTable(comp) {
+  const el = wrapper(comp, comp.config.title || '表格');
+  const body = el.querySelector('.ws-comp-body');
+  const headers = comp.config.headers || [];
+  const rows = comp.state.rows || [];
+
+  let html = '<table class="ws-table"><thead><tr>';
+  headers.forEach(h => html += `<th>${esc(h)}</th>`);
+  html += '</tr></thead><tbody>';
+  rows.forEach(row => {
+    html += '<tr>';
+    row.forEach(cell => html += `<td>${esc(cell)}</td>`);
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  body.innerHTML = html;
+  return el;
+}
+
+// ─── Rich Editor ─────────────────────────────────────
+function renderRichEditor(comp) {
+  const el = wrapper(comp, comp.config.title || '编辑器');
+  const body = el.querySelector('.ws-comp-body');
+  const div = document.createElement('div');
+  div.className = 'rich-editor';
+  div.contentEditable = true;
+  div.setAttribute('data-placeholder', comp.config.placeholder || '在这里输入...');
+  div.innerHTML = comp.state.content || '';
+  div.addEventListener('input', () => {
+    const comp2 = components.find(c => c.id === comp.id);
+    comp2.state.content = div.innerHTML;
+    sendEvent(comp.id, 'content_changed', { content: div.innerHTML }, comp2.state);
+  });
+  body.appendChild(div);
+  return el;
+}
+
+// ─── Util ────────────────────────────────────────────
+function esc(s) {
+  if (typeof s !== 'string') return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── Init ────────────────────────────────────────────
+connect();
+</script>
+</body>
+</html>
