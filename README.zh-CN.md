@@ -161,6 +161,65 @@ ws-workspace state decision-card-xyz
 # 基于选择继续推进...
 ```
 
+## MCP 服务器
+
+WS Workspace 内置 [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) 服务器，支持 MCP 协议的 AI Agent（Claude Desktop、Cursor、Windsurf 等）可以直接使用。
+
+### MCP 配置
+
+在 MCP 客户端配置中添加：
+
+```json
+{
+  "mcpServers": {
+    "ws-workspace": {
+      "command": "npx",
+      "args": ["-y", "ws-workspace", "mcp"]
+    }
+  }
+}
+```
+
+全局安装后：
+
+```json
+{
+  "mcpServers": {
+    "ws-workspace": {
+      "command": "ws-workspace",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+> **注意：** MCP 服务器连接到已运行的工作台。需要先 `ws-workspace start` 启动工作台。
+
+### 可用 MCP 工具
+
+| 工具 | 说明 | 关键参数 |
+|------|------|----------|
+| `workspace_add` | 添加组件 | `type`, `config` |
+| `workspace_state` | 读取状态 | `component_id`（可选） |
+| `workspace_update` | 更新组件 | `component_id`, `config`, `state` |
+| `workspace_delete` | 删除组件 | `component_id` |
+| `workspace_events` | 读取用户事件 | `since`, `component_id` |
+| `workspace_title` | 设置标题 | `title` |
+| `workspace_reset` | 重置工作台 | — |
+| `workspace_wait` | 等待人类操作 | `component_id`, `timeout` |
+
+## Agent Skill
+
+`skills/ws-workspace.md` 是一个 AI Agent 技能文件，可安装到任何兼容的 Agent 框架（Hermes、Cursor rules、CLAUDE.md 等）。包含：
+
+- 完整的组件类型参考
+- Agent 工作流程指南
+- 组件选择决策树
+- 状态读取模式
+- MCP 配置说明
+
+将 `skills/ws-workspace.md` 复制到你的 Agent 技能目录，或直接从 repo 引用。
+
 ## 架构
 
 ```

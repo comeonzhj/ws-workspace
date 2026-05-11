@@ -72,6 +72,7 @@ function printHelp() {
     events [--since=ts] [--component=id]    Get user action events
     title <text>                   Set workspace title
     reset                          Reset the workspace to empty state
+    mcp                            Start MCP server (for AI agent integration)
     help                           Show this help
 
   Environment:
@@ -190,6 +191,18 @@ async function main() {
     case 'reset': {
       const r = await request('POST', '/api/reset');
       console.log(JSON.stringify(r));
+      break;
+    }
+
+    case 'mcp': {
+      // Start MCP server — exec the mcp-server.js as a child process
+      const mcpPath = path.join(__dirname, '..', 'mcp-server.js');
+      const { execFileSync } = require('child_process');
+      try {
+        execFileSync(process.execPath, [mcpPath], { stdio: 'inherit' });
+      } catch (e) {
+        process.exit(e.status || 1);
+      }
       break;
     }
 

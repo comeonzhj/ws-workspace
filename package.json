@@ -1,6 +1,6 @@
 {
   "name": "ws-workspace",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A real-time workspace dashboard with WebSocket-powered components — kanban, todo, tables, forms, and decision cards. Control it from CLI, browser, or agent API.",
   "main": "server.js",
   "bin": {
@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "node server.js",
-    "cli": "node bin/ws-workspace.js"
+    "cli": "node bin/ws-workspace.js",
+    "mcp": "node mcp-server.js"
   },
   "keywords": [
     "workspace",
@@ -39,6 +40,8 @@
     "bin/",
     "server.js",
     "ws-cli.js",
+    "mcp-server.js",
+    "skills/",
     "public/",
     "README.md",
     "README.zh-CN.md"

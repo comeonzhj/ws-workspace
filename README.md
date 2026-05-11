@@ -189,6 +189,65 @@ ws-workspace state decision-card-xyz
 # Agent continues work based on the choice...
 ```
 
+## MCP Server
+
+WS Workspace ships with a built-in [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server for AI agents that support the MCP tool protocol (Claude Desktop, Cursor, Windsurf, etc.).
+
+### MCP Configuration
+
+Add to your MCP client config:
+
+```json
+{
+  "mcpServers": {
+    "ws-workspace": {
+      "command": "npx",
+      "args": ["-y", "ws-workspace", "mcp"]
+    }
+  }
+}
+```
+
+Or if globally installed:
+
+```json
+{
+  "mcpServers": {
+    "ws-workspace": {
+      "command": "ws-workspace",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+> **Note:** The MCP server connects to a running workspace. Start it first with `ws-workspace start`.
+
+### Available MCP Tools
+
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `workspace_add` | Add a component | `type`, `config` |
+| `workspace_state` | Read state | `component_id` (optional) |
+| `workspace_update` | Update a component | `component_id`, `config`, `state` |
+| `workspace_delete` | Remove a component | `component_id` |
+| `workspace_events` | Read user events | `since`, `component_id` |
+| `workspace_title` | Set workspace title | `title` |
+| `workspace_reset` | Reset workspace | — |
+| `workspace_wait` | Wait for user interaction | `component_id`, `timeout` |
+
+## Skill
+
+The `skills/ws-workspace.md` file is an AI agent skill that can be installed into any compatible agent framework (Hermes, Cursor rules, CLAUDE.md, etc.). It provides:
+
+- Complete component reference
+- Workflow guidance for agents
+- Decision tree for choosing the right component
+- State reading patterns
+- MCP configuration
+
+Copy `skills/ws-workspace.md` into your agent's skill directory, or reference it directly from the repo.
+
 ## Architecture
 
 ```
