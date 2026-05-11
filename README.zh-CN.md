@@ -253,4 +253,4 @@ WS Workspace 内置 [MCP (Model Context Protocol)](https://modelcontextprotocol.
 
 ## 许可证
 
-MIT © [jiaai](https://github.com/comeonzhj)
+MIT © [comeonzhj](https://github.com/comeonzhj)
